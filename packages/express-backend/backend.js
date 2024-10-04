@@ -35,6 +35,19 @@ const port = 8000;
 
 app.use(express.json());
 
+//DELETE
+app.delete("/users/:id", (req, res) => {
+  const user_delete = req.params.id;
+  const person = users["users_list"].findIndex(((user) => user["id"] === user_delete));
+  users["users_list"].splice(person, 1);
+  let result = user_delete;
+    if (result === undefined) {
+        res.status(404).send("Resource not found.");
+    } else {
+        res.send();
+    }
+});
+
 const findUserById = (id) =>
     users["users_list"].find((user) => user["id"] === id);
   
@@ -47,7 +60,7 @@ app.get("/users/:id", (req, res) => {
         res.send(result);
     }
 });
-  
+
 // FIND BY NAME 
 const findUserByName = (name) => {
     return users["users_list"].filter(
