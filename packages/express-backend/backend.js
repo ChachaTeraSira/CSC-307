@@ -83,6 +83,8 @@ const findUserByName = (name) => {
   });
 
   const addUser = (user) => {
+    user.id = Math.random().toString(36).substring(2, 9);  // random Id gen
+    // right now the id is printed at end and without " ", how to get those to work?
     users["users_list"].push(user);
     return user;
   };
@@ -90,6 +92,7 @@ const findUserByName = (name) => {
   app.post("/users", (req, res) => {
     const userToAdd = req.body;
     addUser(userToAdd);
+    res.status(201).send({message: 'Content Created'});
     res.send();
   });
 
