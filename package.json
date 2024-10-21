@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run dev -w react-frontend",
+    "dev": "npm -w react-frontend run dev",
+    "backend": "npm -w express-backend run start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
