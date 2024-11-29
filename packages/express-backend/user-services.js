@@ -3,7 +3,7 @@ import userModel from "./user.js";
 
 mongoose.set("debug", true);
 mongoose
-  .connect("mongodb+srv://khushkaranpreet34:yhhHAd082rklvLMy@cluster0.vuywr.mongodb.net/", {
+  .connect("mongodb://localhost:27017", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -13,6 +13,8 @@ function getUsers(name, job) {
   let promise;
   if (name === undefined && job === undefined) {
     promise = userModel.find();
+  } else if (name && job){
+    promise = userModel.find({ name: name, job: job})
   } else if (name && !job) {
     promise = findUserByName(name);
   } else if (job && !name) {
@@ -39,12 +41,13 @@ function findUserByJob(job) {
   return userModel.find({ job: job });
 }
 
-function findUserByNameAndJob(name, job) {
-  return userModel.find({ name: name, job: job });
-}
+// function findUserByNameAndJob(name, job) {
+//   return userModel.find({ name: name, job: job });
+// }
 
-function deleteUser(id) {
-  return userModel.findByIdAndDelete(id);
+function deleteUser(id){
+  const promise = userModel.findByIdAndDelete(id)
+  return promise
 }
 
 export default {
@@ -53,6 +56,6 @@ export default {
   findUserById,
   findUserByName,
   findUserByJob,
-  findUserByNameAndJob,
+  // findUserByNameAndJob,
   deleteUser,
 };
