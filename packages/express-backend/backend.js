@@ -1,5 +1,5 @@
 // backend.js
-import express from "express";
+import express, { json } from "express";
 import cors from "cors";
 import userServices from "./user-services.js";
 
@@ -10,93 +10,68 @@ const port = 8000;
 app.use(cors());
 app.use(express.json());
 
-// const findUserById = (id) =>
-//     users[userServices].find((user) => user["id"] === id);
 app.get("/users", (req, res) => {
-  const { name, job } = req.query;
+  const name = req.query.name;
+  const job = req.query.job;
 
   userServices.getUsers(name, job)
-      .then((result) => res.send({ users_list: result }))
-      .catch((error) => res.status(500).send("Internal Server Error at name-job"));
+    .then((user) => {
+      if (user !== undefined){
+        res.send(user)
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 });
 
 app.get("/users/:id", (req, res) => {
-    const id = req.params["id"]; //or req.params.id
-    userServices.findUserById(id)
+  const id = req.params["id"];
+  userServices.findUserById(id)
     .then((result) => {
-      if (!result) {
-          res.status(404).send("Resource not found.");
+      if (result === undefined) {
+        res.status(404).send("Resource not found.");
       } else {
-          res.send(result);
+        res.status(200).send(result);
       }
-    }) .catch(() => res.status(500).send("Internal Server Error id"));
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 });
 
-// FIND BY NAME 
-// const findUserByName = (name) => {
-//     return users["users_list"].filter(
-//       (user) => user["name"] === name
-//     );
-//   };
-  
-  // app.get("/users", async (req, res) => {
-  //   const name = req.query.name;
-  //   const job = req.query.job;
-  //   try {
-  //     const result = await userServices.findUserByName(name);
-  //     result = { users_list: result };
-  //   } catch {
-  //     res.status(500).send("Internal Server Error");
-  //   }
-  // });
-  
-  //ADD USER
-  // const addUser = (user) => {
-  //   user.id = Math.random().toString(36).substring(2, 8);  // random Id gen
-  //   users["users_list"].push(user);
-  //   return user;
-  // };
-  
-  app.post("/users", (req, res) => {
-    const userToAdd = req.body;
-    userServices.addUser(userToAdd)
-      .then((newUser) => res.status(201).send(newUser))
-      .catch(() => res.status(404).send("Couldn't add user adduser"));
-  });
+app.post("/users", (req, res) => {
+  const userToAdd = req.body;
+  userServices.addUser(userToAdd)
+    .then((result) => {
+      if (result !== undefined){
+        res.status(201).json(result);
+      }
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+});
 
-  //DELETE USER
-  app.delete("/users/:id", (req, res) => {
-    const id = req.params.id;
-    userServices.deleteUser(id)
+app.delete("/users/:id",(req, res) => {
+  const id = req.params["id"];
+  userServices.deleteUser(id)
+    .then((result) => {
+      if (result === null){
+        res.status(404).send("User not Found")
+      } else {
+        res.status(204).send("No Content")
+      }
+    })
+});
+  
 
-      .then((deletedUser) => {
-        if (!deletedUser) {
-          res.status(404).send("Resource not found.");
-        } else {
-          res.status(204).send("User deleted successfully.");
-        }
-      })
-      .catch(() => res.status(500).send("Internal Server Error deelete"));
-  });
-    
-  //   console.log(req.params.id);
-  //   const user_delete = req.params.id;
-  //   const person = users["users_list"].findIndex(((user) => user["id"] === user_delete));
-  //   if (person === -1) {
-  //     res.status(404).send("Resource not found.");
-  //   }
-  //   else {
-  //     const updated = users["users_list"].filter((_,index) => {
-  //       return index !== person;
-  //     });
-  //     users["users_list"] = updated;
-  //     res.status(204).send("Succeed");
-  //   }
-  // });
+app.get("/", (req, res) => {
+  res.send("Testing Nodemon");
+});
 
 app.listen(port, () => {
   console.log(
     `Example app listening at http://localhost:${port}/users`
   );
 });
-
